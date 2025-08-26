@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center_horizontal"
+    tools:context=".ResultsActivity">
+
+    <TextView
+        android:id="@+id/text_view_question_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Trưa nay ăn gì?"
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
+        android:layout_marginBottom="24dp"/>
+
+    <FrameLayout
+        android:id="@+id/frame_layout_result_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_results"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"/>
+
+        <ImageView
+            android:id="@+id/image_view_spinner_wheel"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_spinner_placeholder"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+    </FrameLayout>
+
+
+    <Button
+        android:id="@+id/button_spin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QUAY!"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+
+    <Button
+        android:id="@+id/button_save_template"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Lưu lại mẫu này" />
+
+</LinearLayout>
