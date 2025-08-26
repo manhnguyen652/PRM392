@@ -1,0 +1,59 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="300dp"
+    android:height="300dp"
+    android:viewportWidth="300"
+    android:viewportHeight="300">
+  
+  <!-- Outer ring -->
+  <path
+      android:pathData="M150,150m-140,0a140,140 0,1 1,280 0a140,140 0,1 1,-280 0"
+      android:fillColor="#FF6B6B"
+      android:strokeColor="#333333"
+      android:strokeWidth="4"/>
+  
+  <!-- Inner sections (6 equal parts) -->
+  <!-- Section 1 -->
+  <path
+      android:pathData="M150,150 L150,10 A140,140 0,0 1,271.6 90 Z"
+      android:fillColor="#4ECDC4"/>
+  
+  <!-- Section 2 -->
+  <path
+      android:pathData="M150,150 L271.6,90 A140,140 0,0 1,271.6 210 Z"
+      android:fillColor="#45B7D1"/>
+  
+  <!-- Section 3 -->
+  <path
+      android:pathData="M150,150 L271.6,210 A140,140 0,0 1,150 290 Z"
+      android:fillColor="#F9CA24"/>
+  
+  <!-- Section 4 -->
+  <path
+      android:pathData="M150,150 L150,290 A140,140 0,0 1,28.4 210 Z"
+      android:fillColor="#F0932B"/>
+  
+  <!-- Section 5 -->
+  <path
+      android:pathData="M150,150 L28.4,210 A140,140 0,0 1,28.4 90 Z"
+      android:fillColor="#EB4D4B"/>
+  
+  <!-- Section 6 -->
+  <path
+      android:pathData="M150,150 L28.4,90 A140,140 0,0 1,150 10 Z"
+      android:fillColor="#6C5CE7"/>
+  
+  <!-- Center circle -->
+  <circle
+      android:cx="150"
+      android:cy="150"
+      android:r="20"
+      android:fillColor="#333333"/>
+  
+  <!-- Pointer -->
+  <path
+      android:pathData="M150,5 L140,25 L160,25 Z"
+      android:fillColor="#FFFFFF"
+      android:strokeColor="#333333"
+      android:strokeWidth="2"/>
+  
+</vector>

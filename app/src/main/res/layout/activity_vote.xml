@@ -30,10 +30,24 @@
         android:id="@+id/radio_group_vote_options"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <RadioButton tools:text="Bún chả" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <RadioButton tools:text="Cơm văn phòng" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-        <RadioButton tools:text="Phở cuốn" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <!-- Radio buttons will be added dynamically -->
     </RadioGroup>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_ranking_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:minHeight="200dp"/>
+
+    <LinearLayout
+        android:id="@+id/layout_random_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <!-- Content will be added dynamically -->
+    </LinearLayout>
 
     <View
         android:layout_width="0dp"

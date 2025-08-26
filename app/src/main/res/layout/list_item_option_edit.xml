@@ -15,7 +15,7 @@
         android:hint="Lựa chọn">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_option_name"
+            android:id="@+id/edit_text_option"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapSentences"/>
@@ -26,7 +26,7 @@
         android:id="@+id/button_delete_option"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/ic_delete"
+        android:src="@drawable/ic_delete_24"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="8dp"
         android:contentDescription="Xóa lựa chọn"/>
