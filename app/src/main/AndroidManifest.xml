@@ -48,6 +48,11 @@
             android:name=".JoinPollActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
+        
+        <activity
+            android:name=".SavedPollsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
             
     </application>
 
