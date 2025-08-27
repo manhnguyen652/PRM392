@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_spinner_placeholder"
+        android:layout_marginBottom="32dp"
+        android:contentDescription="Join Poll Icon" />
+
+    <TextView
+        android:id="@+id/text_view_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nhập mã mời 6 ký tự để tham gia cuộc bình chọn"
+        android:textSize="18sp"
+        android:textAlignment="center"
+        android:layout_marginBottom="32dp"
+        android:textColor="@android:color/black" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:hint="Mã mời"
+        android:helperText="Nhập mã 6 ký tự">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edit_text_invite_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapCharacters"
+            android:maxLength="6"
+            android:textSize="24sp"
+            android:fontFamily="monospace"
+            android:gravity="center" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/button_join_poll"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Tham gia bình chọn"
+        android:textSize="16sp"
+        android:enabled="false"
+        android:background="@drawable/button_primary"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mã mời sẽ được hiển thị sau khi tạo cuộc bình chọn"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:layout_marginTop="32dp"
+        android:textColor="@android:color/darker_gray" />
+
+    <Button
+        android:id="@+id/button_back"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Quay lại" />
+
+</LinearLayout>
