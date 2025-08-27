@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Decider</string>
+    <string name="template_library_title">Thư viện mẫu quyết định</string>
 </resources>
