@@ -3,6 +3,7 @@ package com.example.decider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,6 +17,7 @@ public class TemplateLibraryActivity extends AppCompatActivity {
     
     private RecyclerView recyclerViewTemplates;
     private TextView textViewEmpty;
+    private Button buttonBack;
     private TemplateAdapter templateAdapter;
     private PollStorage storage;
     private boolean isSelectMode = false;
@@ -36,12 +38,20 @@ public class TemplateLibraryActivity extends AppCompatActivity {
     private void initializeViews() {
         recyclerViewTemplates = findViewById(R.id.recycler_view_templates);
         textViewEmpty = findViewById(R.id.text_view_empty);
+        buttonBack = findViewById(R.id.button_back);
     }
     
     private void setupUI() {
         setTitle(isSelectMode ? "Chọn mẫu" : "Thư viện mẫu");
         
         recyclerViewTemplates.setLayoutManager(new LinearLayoutManager(this));
+        
+        buttonBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
     
     private void loadTemplates() {

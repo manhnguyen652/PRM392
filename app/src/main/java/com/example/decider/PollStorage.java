@@ -24,32 +24,63 @@ public class PollStorage {
     
     // Poll management
     public void savePoll(Poll poll) {
-        List<Poll> polls = getAllPolls();
-        
-        // Remove existing poll with same ID
-        polls.removeIf(p -> p.getId().equals(poll.getId()));
-        
-        // Add updated poll
-        polls.add(poll);
-        
-        String json = gson.toJson(polls);
-        prefs.edit().putString(KEY_POLLS, json).apply();
+        try {
+            List<Poll> polls = getAllPolls();
+            
+            // Remove existing poll with same ID
+            polls.removeIf(p -> p.getId().equals(poll.getId()));
+            
+            // Add updated poll
+            polls.add(poll);
+            
+            String json = gson.toJson(polls);
+            prefs.edit().putString(KEY_POLLS, json).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public List<Poll> getAllPolls() {
-        String json = prefs.getString(KEY_POLLS, "[]");
-        Type listType = new TypeToken<List<Poll>>(){}.getType();
-        return gson.fromJson(json, listType);
+        try {
+            String json = prefs.getString(KEY_POLLS, "[]");
+            Type listType = new TypeToken<List<Poll>>(){}.getType();
+            List<Poll> polls = gson.fromJson(json, listType);
+            return polls != null ? polls : new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     public Poll getPollById(String id) {
-        List<Poll> polls = getAllPolls();
-        for (Poll poll : polls) {
-            if (poll.getId().equals(id)) {
-                return poll;
+        try {
+            List<Poll> polls = getAllPolls();
+            for (Poll poll : polls) {
+                if (poll != null && poll.getId() != null && poll.getId().equals(id)) {
+                    return poll;
+                }
             }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
+    }
+    
+    public Poll getPollByInviteCode(String inviteCode) {
+        try {
+            List<Poll> polls = getAllPolls();
+            for (Poll poll : polls) {
+                if (poll != null && poll.getInviteCode() != null && 
+                    poll.getInviteCode().equals(inviteCode) && poll.isActive()) {
+                    return poll;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     
     public void deletePoll(String id) {
@@ -61,16 +92,25 @@ public class PollStorage {
     
     // Current poll management
     public void setCurrentPoll(Poll poll) {
-        String json = gson.toJson(poll);
-        prefs.edit().putString(KEY_CURRENT_POLL, json).apply();
+        try {
+            String json = gson.toJson(poll);
+            prefs.edit().putString(KEY_CURRENT_POLL, json).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public Poll getCurrentPoll() {
-        String json = prefs.getString(KEY_CURRENT_POLL, null);
-        if (json != null) {
-            return gson.fromJson(json, Poll.class);
+        try {
+            String json = prefs.getString(KEY_CURRENT_POLL, null);
+            if (json != null) {
+                return gson.fromJson(json, Poll.class);
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
     
     public void clearCurrentPoll() {

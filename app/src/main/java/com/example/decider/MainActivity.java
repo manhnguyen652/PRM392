@@ -41,15 +41,8 @@ public class MainActivity extends AppCompatActivity {
         });
         
         btnJoinPoll.setOnClickListener(v -> {
-            // For demo purposes, automatically join the current poll if exists
-            Poll currentPoll = storage.getCurrentPoll();
-            if (currentPoll != null && currentPoll.isActive()) {
-                Intent intent = new Intent(this, VoteActivity.class);
-                intent.putExtra("poll_id", currentPoll.getId());
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Không có cuộc bình chọn nào đang hoạt động", Toast.LENGTH_SHORT).show();
-            }
+            Intent intent = new Intent(this, JoinPollActivity.class);
+            startActivity(intent);
         });
         
         btnViewTemplates.setOnClickListener(v -> {

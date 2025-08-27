@@ -9,6 +9,14 @@
     android:gravity="center_horizontal"
     tools:context=".ResultsActivity">
 
+    <Button
+        android:id="@+id/button_back"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="← Quay lại" />
+
     <TextView
         android:id="@+id/text_view_question_result"
         android:layout_width="wrap_content"
@@ -58,5 +66,14 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="Lưu lại mẫu này" />
+
+    <Button
+        android:id="@+id/button_show_invite_code"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Hiển thị mã mời"
+        android:visibility="gone" />
 
 </LinearLayout>

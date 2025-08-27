@@ -9,6 +9,14 @@
     android:gravity="center_horizontal"
     tools:context=".VoteActivity">
 
+    <Button
+        android:id="@+id/button_back"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="← Quay lại" />
+
     <TextView
         android:id="@+id/text_view_timer"
         android:layout_width="wrap_content"
