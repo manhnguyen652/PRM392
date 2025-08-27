@@ -44,9 +44,9 @@
   
   <!-- Center circle -->
   <circle
-      android:cx="150"
-      android:cy="150"
-      android:r="20"
+      cx="150"
+      cy="150"
+      r="20"
       android:fillColor="#333333"/>
   
   <!-- Pointer -->
