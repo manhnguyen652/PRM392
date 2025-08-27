@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         Button btnCreatePoll = findViewById(R.id.button_create_poll);
         Button btnJoinPoll = findViewById(R.id.button_join_poll);
         Button btnViewTemplates = findViewById(R.id.button_view_templates);
+        Button btnSavedPolls = findViewById(R.id.button_saved_polls);
         
         btnCreatePoll.setOnClickListener(v -> {
             Intent intent = new Intent(this, CreatePollActivity.class);
@@ -47,6 +48,11 @@ public class MainActivity extends AppCompatActivity {
         
         btnViewTemplates.setOnClickListener(v -> {
             Intent intent = new Intent(this, TemplateLibraryActivity.class);
+            startActivity(intent);
+        });
+
+        btnSavedPolls.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SavedPollsActivity.class);
             startActivity(intent);
         });
     }

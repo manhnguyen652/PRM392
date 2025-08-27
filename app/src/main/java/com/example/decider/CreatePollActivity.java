@@ -124,11 +124,11 @@ public class CreatePollActivity extends AppCompatActivity {
             if (buttonUseTemplate != null) {
                 buttonUseTemplate.setOnClickListener(v -> {
                     if (storage != null && storage.hasTemplates()) {
-                        Intent intent = new Intent(this, TemplateLibraryActivity.class);
+                        Intent intent = new Intent(CreatePollActivity.this, TemplateLibraryActivity.class);
                         intent.putExtra("select_mode", true);
                         startActivityForResult(intent, 100);
                     } else {
-                        Toast.makeText(this, "Chưa có mẫu nào được lưu", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CreatePollActivity.this, "Chưa có mẫu nào được lưu", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
