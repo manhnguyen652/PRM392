@@ -16,7 +16,7 @@ import java.util.List;
 public class TemplateLibraryActivity extends AppCompatActivity {
     
     private RecyclerView recyclerViewTemplates;
-    private TextView textViewEmpty;
+    private View textViewEmpty;
     private Button buttonBack;
     private TemplateAdapter templateAdapter;
     private PollStorage storage;
