@@ -32,6 +32,7 @@ public class CreatePollActivity extends AppCompatActivity {
     private EditText editTextTimer;
     private Button buttonCreatePoll;
     private Button buttonUseTemplate;
+    private Button buttonSaveTemplate;
     private Button buttonBack;
     
     private PollOptionsAdapter optionsAdapter;
@@ -73,13 +74,14 @@ public class CreatePollActivity extends AppCompatActivity {
             editTextTimer = findViewById(R.id.edit_text_timer);
             buttonCreatePoll = findViewById(R.id.button_create_poll);
             buttonUseTemplate = findViewById(R.id.button_use_template);
+            buttonSaveTemplate = findViewById(R.id.button_save_template);
             buttonBack = findViewById(R.id.button_back);
             
             // Validate that all views were found
             if (editTextQuestion == null || recyclerViewOptions == null || buttonAddOption == null ||
                 radioGroupMode == null || switchAutoLock == null || layoutTimerSettings == null ||
                 editTextTimer == null || buttonCreatePoll == null || buttonUseTemplate == null ||
-                buttonBack == null) {
+                buttonSaveTemplate == null || buttonBack == null) {
                 Toast.makeText(this, "Lỗi: Không thể khởi tạo giao diện", Toast.LENGTH_LONG).show();
                 finish();
                 return;
@@ -129,6 +131,10 @@ public class CreatePollActivity extends AppCompatActivity {
                         Toast.makeText(this, "Chưa có mẫu nào được lưu", Toast.LENGTH_SHORT).show();
                     }
                 });
+            }
+            
+            if (buttonSaveTemplate != null) {
+                buttonSaveTemplate.setOnClickListener(v -> saveCurrentAsTemplate());
             }
             
             // Setup auto timer switch
@@ -368,6 +374,143 @@ public class CreatePollActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+    
+    private void saveCurrentAsTemplate() {
+        try {
+            // Validate input
+            if (editTextQuestion == null) {
+                Toast.makeText(this, "Lỗi: Không thể truy cập trường câu hỏi", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            String question = editTextQuestion.getText().toString().trim();
+            if (question.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập câu hỏi trước khi lưu mẫu", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Filter out empty options
+            List<String> validOptions = new ArrayList<>();
+            if (options != null) {
+                for (String option : options) {
+                    if (option != null && !option.trim().isEmpty()) {
+                        validOptions.add(option.trim());
+                    }
+                }
+            }
+            
+            if (validOptions.size() < 2) {
+                Toast.makeText(this, "Cần ít nhất 2 lựa chọn có nội dung để lưu mẫu", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Show dialog to get template name
+            showSaveTemplateDialog(question, validOptions);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Có lỗi xảy ra khi lưu mẫu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void showSaveTemplateDialog(String question, List<String> validOptions) {
+        try {
+            androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+            
+            // Create custom dialog layout
+            LinearLayout dialogLayout = new LinearLayout(this);
+            dialogLayout.setOrientation(LinearLayout.VERTICAL);
+            dialogLayout.setPadding(50, 40, 50, 40);
+            
+            // Template name input
+            com.google.android.material.textfield.TextInputLayout inputLayout = 
+                new com.google.android.material.textfield.TextInputLayout(this);
+            inputLayout.setHint("Tên mẫu (VD: Ăn trưa hàng ngày)");
+            
+            com.google.android.material.textfield.TextInputEditText editTextTemplateName = 
+                new com.google.android.material.textfield.TextInputEditText(this);
+            editTextTemplateName.setText(question); // Default to question text
+            editTextTemplateName.selectAll();
+            
+            inputLayout.addView(editTextTemplateName);
+            dialogLayout.addView(inputLayout);
+            
+            builder.setView(dialogLayout)
+                    .setTitle("💾 Lưu mẫu")
+                    .setMessage("Lưu cấu hình hiện tại thành mẫu để sử dụng lại sau này")
+                    .setPositiveButton("Lưu", (dialog, which) -> {
+                        try {
+                            String templateName = editTextTemplateName.getText().toString().trim();
+                            if (!templateName.isEmpty()) {
+                                saveTemplate(templateName, question, validOptions);
+                            } else {
+                                Toast.makeText(this, "Vui lòng nhập tên mẫu", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Lỗi khi lưu mẫu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+                    
+            // Focus on input field
+            editTextTemplateName.requestFocus();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi hiển thị dialog: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    private void saveTemplate(String templateName, String question, List<String> validOptions) {
+        try {
+            if (storage == null) {
+                Toast.makeText(this, "Lỗi: Không thể truy cập bộ nhớ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Create template
+            PollTemplate template = new PollTemplate(templateName, question, validOptions);
+            
+            // Set voting mode
+            if (radioGroupMode != null) {
+                int checkedId = radioGroupMode.getCheckedRadioButtonId();
+                if (checkedId == R.id.radio_ranked_choice) {
+                    template.setDefaultVotingMode(Poll.VotingMode.RANKED_CHOICE);
+                } else if (checkedId == R.id.radio_random_spinner) {
+                    template.setDefaultVotingMode(Poll.VotingMode.RANDOM_SPINNER);
+                } else {
+                    template.setDefaultVotingMode(Poll.VotingMode.SINGLE_CHOICE);
+                }
+            }
+            
+            // Set timer settings
+            if (switchAutoLock != null && switchAutoLock.isChecked() && editTextTimer != null) {
+                try {
+                    String timerText = editTextTimer.getText().toString();
+                    if (!timerText.isEmpty()) {
+                        int timerMinutes = Integer.parseInt(timerText);
+                        if (timerMinutes > 0) {
+                            template.setHasDefaultTimer(true);
+                            template.setDefaultTimerMinutes(timerMinutes);
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // Timer parsing failed, keep default (no timer)
+                }
+            }
+            
+            // Save template
+            storage.saveTemplate(template);
+            
+            Toast.makeText(this, "✅ Đã lưu mẫu \"" + templateName + "\" thành công!", Toast.LENGTH_SHORT).show();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi lưu mẫu: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

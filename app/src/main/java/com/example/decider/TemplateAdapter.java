@@ -36,46 +36,74 @@ public class TemplateAdapter extends RecyclerView.Adapter<TemplateAdapter.ViewHo
     
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        PollTemplate template = templates.get(position);
-        
-        holder.textViewTemplateName.setText(template.getName());
-        holder.textViewOptionsCount.setText(template.getOptions().size() + " lựa chọn");
-        
-        // Set voting mode text
-        String votingModeText;
-        switch (template.getDefaultVotingMode()) {
-            case SINGLE_CHOICE:
-                votingModeText = "Bình chọn 1 lần";
-                break;
-            case RANKED_CHOICE:
-                votingModeText = "Bình chọn xếp hạng";
-                break;
-            case RANDOM_SPINNER:
-                votingModeText = "Quay ngẫu nhiên";
-                break;
-            default:
-                votingModeText = "Bình chọn 1 lần";
-                break;
-        }
-        
-        if (template.isHasDefaultTimer()) {
-            votingModeText += " • " + template.getDefaultTimerMinutes() + " phút";
-        }
-        
-        holder.textViewVotingMode.setText(votingModeText);
-        
-        // Set click listeners
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onTemplateClick(template);
+        try {
+            if (position < 0 || position >= templates.size()) {
+                return;
             }
-        });
-        
-        holder.buttonDeleteTemplate.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onTemplateDelete(template);
+            
+            PollTemplate template = templates.get(position);
+            if (template == null) {
+                return;
             }
-        });
+            
+            // Set template name with null check
+            String templateName = template.getName();
+            if (templateName == null || templateName.trim().isEmpty()) {
+                templateName = "Mẫu không có tên";
+            }
+            holder.textViewTemplateName.setText(templateName);
+            
+            // Set options count with null check
+            int optionsCount = 0;
+            if (template.getOptions() != null) {
+                optionsCount = template.getOptions().size();
+            }
+            holder.textViewOptionsCount.setText(optionsCount + " lựa chọn");
+            
+            // Set voting mode text with null check
+            String votingModeText = "Bình chọn 1 lần"; // Default
+            if (template.getDefaultVotingMode() != null) {
+                switch (template.getDefaultVotingMode()) {
+                    case SINGLE_CHOICE:
+                        votingModeText = "Bình chọn 1 lần";
+                        break;
+                    case RANKED_CHOICE:
+                        votingModeText = "Bình chọn xếp hạng";
+                        break;
+                    case RANDOM_SPINNER:
+                        votingModeText = "Quay ngẫu nhiên";
+                        break;
+                    default:
+                        votingModeText = "Bình chọn 1 lần";
+                        break;
+                }
+            }
+            
+            if (template.isHasDefaultTimer() && template.getDefaultTimerMinutes() > 0) {
+                votingModeText += " • " + template.getDefaultTimerMinutes() + " phút";
+            }
+            
+            holder.textViewVotingMode.setText(votingModeText);
+            
+            // Set click listeners with null checks
+            holder.itemView.setOnClickListener(v -> {
+                if (listener != null && template != null) {
+                    listener.onTemplateClick(template);
+                }
+            });
+            
+            holder.buttonDeleteTemplate.setOnClickListener(v -> {
+                if (listener != null && template != null) {
+                    listener.onTemplateDelete(template);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Set fallback values to prevent crash
+            holder.textViewTemplateName.setText("Lỗi tải mẫu");
+            holder.textViewVotingMode.setText("Không xác định");
+            holder.textViewOptionsCount.setText("0 lựa chọn");
+        }
     }
     
     @Override
