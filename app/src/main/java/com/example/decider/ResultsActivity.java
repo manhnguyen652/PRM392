@@ -27,6 +27,7 @@ public class ResultsActivity extends AppCompatActivity {
     private FrameLayout frameLayoutResultContainer;
     private RecyclerView recyclerViewResults;
     private ImageView imageViewSpinnerWheel;
+    private SpinningWheelView spinningWheelView;
     private Button buttonSpin;
     private Button buttonSaveTemplate;
     private Button buttonShowInviteCode;
@@ -63,6 +64,7 @@ public class ResultsActivity extends AppCompatActivity {
             frameLayoutResultContainer = findViewById(R.id.frame_layout_result_container);
             recyclerViewResults = findViewById(R.id.recycler_view_results);
             imageViewSpinnerWheel = findViewById(R.id.image_view_spinner_wheel);
+            spinningWheelView = findViewById(R.id.spinning_wheel_view);
             buttonSpin = findViewById(R.id.button_spin);
             buttonSaveTemplate = findViewById(R.id.button_save_template);
             buttonShowInviteCode = findViewById(R.id.button_show_invite_code);
@@ -71,7 +73,7 @@ public class ResultsActivity extends AppCompatActivity {
             // Validate that all views were found
             if (textViewQuestionResult == null || frameLayoutResultContainer == null || 
                 recyclerViewResults == null || imageViewSpinnerWheel == null || 
-                buttonSpin == null || buttonSaveTemplate == null || 
+                spinningWheelView == null || buttonSpin == null || buttonSaveTemplate == null || 
                 buttonShowInviteCode == null || buttonBack == null) {
                 Toast.makeText(this, "Lỗi: Không thể khởi tạo giao diện", Toast.LENGTH_LONG).show();
                 finish();
@@ -261,28 +263,17 @@ public class ResultsActivity extends AppCompatActivity {
                 recyclerViewResults.setVisibility(View.GONE);
             }
             if (imageViewSpinnerWheel != null) {
-                imageViewSpinnerWheel.setVisibility(View.VISIBLE);
+                imageViewSpinnerWheel.setVisibility(View.GONE);
+            }
+            if (spinningWheelView != null) {
+                spinningWheelView.setVisibility(View.VISIBLE);
+                spinningWheelView.setOptions(poll.getOptions());
+                spinningWheelView.setOnSpinCompleteListener(this::onSpinComplete);
             }
             if (buttonSpin != null) {
                 buttonSpin.setVisibility(View.VISIBLE);
                 buttonSpin.setText("Quay Thưởng!");
                 buttonSpin.setOnClickListener(v -> spinWheel());
-            }
-            
-            // Create dynamic spinner wheel
-            createSpinnerWheel();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void createSpinnerWheel() {
-        try {
-            // For now, use the placeholder spinner
-            // In a real implementation, you would dynamically create a wheel
-            // with the poll options as segments
-            if (imageViewSpinnerWheel != null) {
-                imageViewSpinnerWheel.setImageResource(R.drawable.ic_spinner_placeholder);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -291,38 +282,63 @@ public class ResultsActivity extends AppCompatActivity {
     
     private void spinWheel() {
         try {
-            if (buttonSpin == null) {
+            if (buttonSpin == null || spinningWheelView == null) {
                 return;
             }
             
             buttonSpin.setEnabled(false);
             buttonSpin.setText("Đang quay...");
             
-            // Calculate random rotation (multiple full rotations + final position)
-            int baseRotations = 3 + random.nextInt(3); // 3-5 full rotations
-            float finalAngle = random.nextFloat() * 360; // Random final position
-            float totalRotation = baseRotations * 360 + finalAngle;
-            
-            // Animate the wheel
-            if (imageViewSpinnerWheel != null) {
-                ObjectAnimator rotationAnimator = ObjectAnimator.ofFloat(
-                    imageViewSpinnerWheel, "rotation", 0f, totalRotation);
-                rotationAnimator.setDuration(3000); // 3 seconds
-                rotationAnimator.setInterpolator(new DecelerateInterpolator());
-                
-                rotationAnimator.start();
-                
-                // Show result after animation
-                new Handler().postDelayed(() -> {
-                    showSpinnerResult(finalAngle);
-                }, 3000);
-            }
+            // Use the custom spinning wheel view
+            spinningWheelView.spin();
         } catch (Exception e) {
             e.printStackTrace();
             if (buttonSpin != null) {
                 buttonSpin.setEnabled(true);
                 buttonSpin.setText("Quay Thưởng!");
             }
+        }
+    }
+    
+    private void onSpinComplete(String selectedOption) {
+        try {
+            // Re-enable the spin button
+            if (buttonSpin != null) {
+                buttonSpin.setEnabled(true);
+                buttonSpin.setText("Quay Thưởng!");
+            }
+            
+            // Show result dialog
+            new AlertDialog.Builder(this)
+                .setTitle("🎉 Kết quả quay thưởng!")
+                .setMessage("Chiến thắng thuộc về:\n\n\"" + selectedOption + "\"")
+                .setPositiveButton("Tuyệt vời!", (dialog, which) -> {
+                    try {
+                        // Update poll with result
+                        List<String> options = new ArrayList<>(poll.getOptions());
+                        List<String> results = new ArrayList<>();
+                        results.add(selectedOption);
+                        
+                        // Add other options in random order
+                        options.remove(selectedOption);
+                        java.util.Collections.shuffle(options);
+                        results.addAll(options);
+                        
+                        poll.setResults(results);
+                        if (storage != null) {
+                            storage.savePoll(poll);
+                        }
+                        
+                        // Switch to regular results view
+                        showFinalSpinnerResults(selectedOption);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                })
+                .setCancelable(false)
+                .show();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
@@ -376,6 +392,9 @@ public class ResultsActivity extends AppCompatActivity {
         try {
             if (imageViewSpinnerWheel != null) {
                 imageViewSpinnerWheel.setVisibility(View.GONE);
+            }
+            if (spinningWheelView != null) {
+                spinningWheelView.setVisibility(View.GONE);
             }
             if (buttonSpin != null) {
                 buttonSpin.setVisibility(View.GONE);
