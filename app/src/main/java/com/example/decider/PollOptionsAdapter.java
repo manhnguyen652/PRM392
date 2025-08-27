@@ -37,6 +37,10 @@ public class PollOptionsAdapter extends RecyclerView.Adapter<PollOptionsAdapter.
     
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        if (options == null || position < 0 || position >= options.size()) {
+            return;
+        }
+        
         String option = options.get(position);
         
         // Remove previous text watcher to avoid conflicts
@@ -44,7 +48,7 @@ public class PollOptionsAdapter extends RecyclerView.Adapter<PollOptionsAdapter.
             holder.editTextOption.removeTextChangedListener(holder.textWatcher);
         }
         
-        holder.editTextOption.setText(option);
+        holder.editTextOption.setText(option != null ? option : "");
         holder.editTextOption.setHint("Lựa chọn " + (position + 1));
         
         // Create new text watcher

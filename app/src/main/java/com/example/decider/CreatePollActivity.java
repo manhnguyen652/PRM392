@@ -199,8 +199,15 @@ public class CreatePollActivity extends AppCompatActivity {
             }
             
             String question = editTextQuestion.getText().toString().trim();
-            boolean hasValidOptions = options != null && options.size() >= 2 && 
-                options.stream().anyMatch(option -> option != null && !option.trim().isEmpty());
+            boolean hasValidOptions = false;
+            if (options != null && options.size() >= 2) {
+                for (String option : options) {
+                    if (option != null && !option.trim().isEmpty()) {
+                        hasValidOptions = true;
+                        break;
+                    }
+                }
+            }
             
             buttonCreatePoll.setEnabled(!question.isEmpty() && hasValidOptions);
         } catch (Exception e) {
