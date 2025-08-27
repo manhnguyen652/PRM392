@@ -75,33 +75,39 @@ public class JoinPollActivity extends AppCompatActivity {
     }
     
     private void joinPoll() {
-        String inviteCode = editTextInviteCode.getText().toString().trim().toUpperCase();
-        
-        if (inviteCode.length() != 6) {
-            Toast.makeText(this, "Mã mời phải có 6 ký tự", Toast.LENGTH_SHORT).show();
-            return;
+        try {
+            String inviteCode = editTextInviteCode.getText().toString().trim().toUpperCase();
+            
+            if (inviteCode.length() != 6) {
+                Toast.makeText(this, "Mã mời phải có 6 ký tự", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Tìm poll theo mã mời
+            Poll poll = storage.getPollByInviteCode(inviteCode);
+            
+            if (poll == null) {
+                Toast.makeText(this, "Không tìm thấy cuộc bình chọn với mã này", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            if (!poll.isActive()) {
+                Toast.makeText(this, "Cuộc bình chọn này đã kết thúc", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            // Lưu poll hiện tại và chuyển đến màn hình bình chọn
+            storage.setCurrentPoll(poll);
+            Toast.makeText(this, "Đã tham gia cuộc bình chọn: " + poll.getQuestion(), Toast.LENGTH_SHORT).show();
+            
+            Intent intent = new Intent(this, VoteActivity.class);
+            intent.putExtra("poll_id", poll.getId());
+            startActivity(intent);
+            finish();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Có lỗi xảy ra khi tham gia cuộc bình chọn: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        
-        // Tìm poll theo mã mời
-        Poll poll = storage.getPollByInviteCode(inviteCode);
-        
-        if (poll == null) {
-            Toast.makeText(this, "Không tìm thấy cuộc bình chọn với mã này", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        if (!poll.isActive()) {
-            Toast.makeText(this, "Cuộc bình chọn này đã kết thúc", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        // Lưu poll hiện tại và chuyển đến màn hình bình chọn
-        storage.setCurrentPoll(poll);
-        Toast.makeText(this, "Đã tham gia cuộc bình chọn: " + poll.getQuestion(), Toast.LENGTH_SHORT).show();
-        
-        Intent intent = new Intent(this, VoteActivity.class);
-        intent.putExtra("poll_id", poll.getId());
-        startActivity(intent);
-        finish();
     }
 }

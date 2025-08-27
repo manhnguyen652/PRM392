@@ -146,57 +146,64 @@ public class CreatePollActivity extends AppCompatActivity {
     }
     
     private void createPoll() {
-        String question = editTextQuestion.getText().toString().trim();
-        
-        // Filter out empty options
-        List<String> validOptions = new ArrayList<>();
-        for (String option : options) {
-            if (!option.trim().isEmpty()) {
-                validOptions.add(option.trim());
+        try {
+            String question = editTextQuestion.getText().toString().trim();
+            
+            // Filter out empty options
+            List<String> validOptions = new ArrayList<>();
+            for (String option : options) {
+                if (!option.trim().isEmpty()) {
+                    validOptions.add(option.trim());
+                }
             }
-        }
-        
-        if (validOptions.size() < 2) {
-            Toast.makeText(this, "Cần ít nhất 2 lựa chọn có nội dung", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        
-        // Determine voting mode
-        Poll.VotingMode votingMode = Poll.VotingMode.SINGLE_CHOICE;
-        int checkedId = radioGroupMode.getCheckedRadioButtonId();
-        if (checkedId == R.id.radio_ranked_choice) {
-            votingMode = Poll.VotingMode.RANKED_CHOICE;
-        } else if (checkedId == R.id.radio_random_spinner) {
-            votingMode = Poll.VotingMode.RANDOM_SPINNER;
-        }
-        
-        // Create poll
-        Poll poll = new Poll("poll_" + System.currentTimeMillis(), question, validOptions, votingMode);
-        
-        // Set timer if enabled
-        if (switchAutoLock.isChecked()) {
-            try {
-                int timerMinutes = Integer.parseInt(editTextTimer.getText().toString());
-                poll.setHasTimer(true);
-                poll.setTimerMinutes(timerMinutes);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Vui lòng nhập số phút hợp lệ", Toast.LENGTH_SHORT).show();
+            
+            if (validOptions.size() < 2) {
+                Toast.makeText(this, "Cần ít nhất 2 lựa chọn có nội dung", Toast.LENGTH_SHORT).show();
                 return;
             }
+            
+            // Determine voting mode
+            Poll.VotingMode votingMode = Poll.VotingMode.SINGLE_CHOICE;
+            int checkedId = radioGroupMode.getCheckedRadioButtonId();
+            if (checkedId == R.id.radio_ranked_choice) {
+                votingMode = Poll.VotingMode.RANKED_CHOICE;
+            } else if (checkedId == R.id.radio_random_spinner) {
+                votingMode = Poll.VotingMode.RANDOM_SPINNER;
+            }
+            
+            // Create poll
+            Poll poll = new Poll("poll_" + System.currentTimeMillis(), question, validOptions, votingMode);
+            
+            // Set timer if enabled
+            if (switchAutoLock.isChecked()) {
+                try {
+                    int timerMinutes = Integer.parseInt(editTextTimer.getText().toString());
+                    poll.setHasTimer(true);
+                    poll.setTimerMinutes(timerMinutes);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Vui lòng nhập số phút hợp lệ", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+            
+            // Save poll
+            storage.savePoll(poll);
+            storage.setCurrentPoll(poll);
+            
+            Toast.makeText(this, "Đã tạo cuộc bình chọn thành công!", Toast.LENGTH_SHORT).show();
+            
+            // Go to results screen to show poll code and manage
+            Intent intent = new Intent(this, ResultsActivity.class);
+            intent.putExtra("poll_id", poll.getId());
+            intent.putExtra("is_creator", true);
+            startActivity(intent);
+            finish();
+            
+        } catch (Exception e) {
+            // Log error and show user-friendly message
+            e.printStackTrace();
+            Toast.makeText(this, "Có lỗi xảy ra khi tạo cuộc bình chọn: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        
-        // Save poll
-        storage.savePoll(poll);
-        storage.setCurrentPoll(poll);
-        
-        Toast.makeText(this, "Đã tạo cuộc bình chọn thành công!", Toast.LENGTH_SHORT).show();
-        
-        // Go to results screen to show poll code and manage
-        Intent intent = new Intent(this, ResultsActivity.class);
-        intent.putExtra("poll_id", poll.getId());
-        intent.putExtra("is_creator", true);
-        startActivity(intent);
-        finish();
     }
     
     private void loadTemplate(String templateId) {

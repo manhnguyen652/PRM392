@@ -33,14 +33,18 @@ public class Poll {
         this.isActive = true;
         this.startTime = System.currentTimeMillis();
         this.inviteCode = generateInviteCode();
+        // Không gọi calculateResults() ở đây vì options còn rỗng
     }
     
     public Poll(String id, String question, List<String> options, VotingMode votingMode) {
         this();
         this.id = id;
         this.question = question;
-        this.options = new ArrayList<>(options);
+        if (options != null) {
+            this.options = new ArrayList<>(options);
+        }
         this.votingMode = votingMode;
+        // Không gọi calculateResults() ở đây vì chưa có votes
     }
     
     // Tạo mã mời ngẫu nhiên 6 ký tự
@@ -108,11 +112,21 @@ public class Poll {
     
     public void closePoll() {
         isActive = false;
-        calculateResults();
+        // Chỉ tính toán kết quả khi có options và votes
+        if (options != null && !options.isEmpty()) {
+            calculateResults();
+        }
     }
     
     private void calculateResults() {
+        if (results == null) {
+            results = new ArrayList<>();
+        }
         results.clear();
+        
+        if (options == null || options.isEmpty()) {
+            return; // Không thể tính toán kết quả nếu không có options
+        }
         
         switch (votingMode) {
             case SINGLE_CHOICE:
@@ -129,14 +143,18 @@ public class Poll {
     }
     
     private void calculateSingleChoiceResults() {
+        if (options == null || options.isEmpty()) return;
+        
         Map<String, Integer> counts = new HashMap<>();
         for (String option : options) {
             counts.put(option, 0);
         }
         
-        for (Vote vote : votes.values()) {
-            if (vote.getSingleChoice() != null) {
-                counts.put(vote.getSingleChoice(), counts.get(vote.getSingleChoice()) + 1);
+        if (votes != null) {
+            for (Vote vote : votes.values()) {
+                if (vote != null && vote.getSingleChoice() != null) {
+                    counts.put(vote.getSingleChoice(), counts.get(vote.getSingleChoice()) + 1);
+                }
             }
         }
         
@@ -145,18 +163,24 @@ public class Poll {
     }
     
     private void calculateRankedChoiceResults() {
+        if (options == null || options.isEmpty()) return;
+        
         Map<String, Integer> scores = new HashMap<>();
         for (String option : options) {
             scores.put(option, 0);
         }
         
-        for (Vote vote : votes.values()) {
-            List<String> rankings = vote.getRankings();
-            if (rankings != null) {
-                for (int i = 0; i < rankings.size(); i++) {
-                    String option = rankings.get(i);
-                    int points = options.size() - i; // First place gets most points
-                    scores.put(option, scores.get(option) + points);
+        if (votes != null) {
+            for (Vote vote : votes.values()) {
+                if (vote != null) {
+                    List<String> rankings = vote.getRankings();
+                    if (rankings != null) {
+                        for (int i = 0; i < rankings.size(); i++) {
+                            String option = rankings.get(i);
+                            int points = options.size() - i; // First place gets most points
+                            scores.put(option, scores.get(option) + points);
+                        }
+                    }
                 }
             }
         }
@@ -166,12 +190,14 @@ public class Poll {
     }
     
     public boolean hasTiedResults() {
-        if (results.size() < 2) return false;
+        if (results == null || results.size() < 2) return false;
         
         Map<String, Integer> counts = new HashMap<>();
-        for (Vote vote : votes.values()) {
-            if (votingMode == VotingMode.SINGLE_CHOICE && vote.getSingleChoice() != null) {
-                counts.put(vote.getSingleChoice(), counts.getOrDefault(vote.getSingleChoice(), 0) + 1);
+        if (votes != null) {
+            for (Vote vote : votes.values()) {
+                if (vote != null && votingMode == VotingMode.SINGLE_CHOICE && vote.getSingleChoice() != null) {
+                    counts.put(vote.getSingleChoice(), counts.getOrDefault(vote.getSingleChoice(), 0) + 1);
+                }
             }
         }
         

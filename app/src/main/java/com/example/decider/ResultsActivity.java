@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 import java.util.Random;
+import java.util.ArrayList;
 
 public class ResultsActivity extends AppCompatActivity {
     
@@ -77,81 +78,103 @@ public class ResultsActivity extends AppCompatActivity {
     }
     
     private void setupUI() {
-        textViewQuestionResult.setText(poll.getQuestion());
-        
-        // Close poll if not already closed
-        if (poll.isActive() && poll.isExpired()) {
-            poll.closePoll();
-            storage.savePoll(poll);
-        }
-        
-        // Show invite code if this is a newly created poll
-        if (isCreator && poll.isActive()) {
-            showInviteCodeDialog();
-        }
-        
-        // Setup based on voting mode
-        switch (poll.getVotingMode()) {
-            case SINGLE_CHOICE:
-            case RANKED_CHOICE:
-                showRegularResults();
-                break;
-            case RANDOM_SPINNER:
-                showSpinnerMode();
-                break;
-        }
-        
-        // Setup save template button (only for creator)
-        if (isCreator) {
-            buttonSaveTemplate.setVisibility(View.VISIBLE);
-            buttonSaveTemplate.setOnClickListener(v -> saveAsTemplate());
+        try {
+            textViewQuestionResult.setText(poll.getQuestion());
             
-            // Show invite code button for active polls
-            if (poll.isActive()) {
-                buttonShowInviteCode.setVisibility(View.VISIBLE);
-                buttonShowInviteCode.setOnClickListener(v -> showInviteCodeDialog());
+            // Close poll if not already closed
+            if (poll.isActive() && poll.isExpired()) {
+                poll.closePoll();
+                storage.savePoll(poll);
+            }
+            
+            // Show invite code if this is a newly created poll
+            if (isCreator && poll.isActive()) {
+                showInviteCodeDialog();
+            }
+            
+            // Setup based on voting mode
+            switch (poll.getVotingMode()) {
+                case SINGLE_CHOICE:
+                case RANKED_CHOICE:
+                    showRegularResults();
+                    break;
+                case RANDOM_SPINNER:
+                    showSpinnerMode();
+                    break;
+            }
+            
+            // Setup save template button (only for creator)
+            if (isCreator) {
+                buttonSaveTemplate.setVisibility(View.VISIBLE);
+                buttonSaveTemplate.setOnClickListener(v -> saveAsTemplate());
+                
+                // Show invite code button for active polls
+                if (poll.isActive()) {
+                    buttonShowInviteCode.setVisibility(View.VISIBLE);
+                    buttonShowInviteCode.setOnClickListener(v -> showInviteCodeDialog());
+                } else {
+                    buttonShowInviteCode.setVisibility(View.GONE);
+                }
             } else {
+                buttonSaveTemplate.setVisibility(View.GONE);
                 buttonShowInviteCode.setVisibility(View.GONE);
             }
-        } else {
-            buttonSaveTemplate.setVisibility(View.GONE);
-            buttonShowInviteCode.setVisibility(View.GONE);
-        }
 
-        // Setup back button
-        buttonBack.setOnClickListener(v -> {
-            Intent intent = new Intent(ResultsActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            // Setup back button
+            buttonBack.setOnClickListener(v -> {
+                Intent intent = new Intent(ResultsActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            });
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Có lỗi xảy ra khi khởi tạo giao diện: " + e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
-        });
+        }
     }
     
     private void showInviteCodeDialog() {
-        new AlertDialog.Builder(this)
-            .setTitle("🎉 Cuộc bình chọn đã được tạo!")
-            .setMessage("Mã mời: " + poll.getInviteCode() + "\n\nChia sẻ mã này với người khác để họ có thể tham gia bình chọn.")
-            .setPositiveButton("Sao chép mã", (dialog, which) -> {
-                // Copy invite code to clipboard
-                android.content.ClipboardManager clipboard = 
-                    (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                android.content.ClipData clip = 
-                    android.content.ClipData.newPlainText("Mã mời", poll.getInviteCode());
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(this, "Đã sao chép mã mời vào clipboard", Toast.LENGTH_SHORT).show();
-            })
-            .setNeutralButton("Chia sẻ", (dialog, which) -> {
-                // Share invite code
-                Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                shareIntent.setType("text/plain");
-                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Mã mời tham gia bình chọn");
-                shareIntent.putExtra(Intent.EXTRA_TEXT, 
-                    "Mã mời: " + poll.getInviteCode() + "\n\nHãy nhập mã này vào ứng dụng Decider để tham gia bình chọn: " + poll.getQuestion());
-                startActivity(Intent.createChooser(shareIntent, "Chia sẻ mã mời"));
-            })
-            .setNegativeButton("Đóng", null)
-            .setCancelable(false)
-            .show();
+        try {
+            new AlertDialog.Builder(this)
+                .setTitle("🎉 Cuộc bình chọn đã được tạo!")
+                .setMessage("Mã mời: " + poll.getInviteCode() + "\n\nChia sẻ mã này với người khác để họ có thể tham gia bình chọn.")
+                .setPositiveButton("Sao chép mã", (dialog, which) -> {
+                    try {
+                        // Copy invite code to clipboard
+                        android.content.ClipboardManager clipboard = 
+                            (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                        android.content.ClipData clip = 
+                            android.content.ClipData.newPlainText("Mã mời", poll.getInviteCode());
+                        clipboard.setPrimaryClip(clip);
+                        Toast.makeText(this, "Đã sao chép mã mời vào clipboard", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Không thể sao chép mã mời", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNeutralButton("Chia sẻ", (dialog, which) -> {
+                    try {
+                        // Share invite code
+                        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                        shareIntent.setType("text/plain");
+                        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Mã mời tham gia bình chọn");
+                        shareIntent.putExtra(Intent.EXTRA_TEXT, 
+                            "Mã mời: " + poll.getInviteCode() + "\n\nHãy nhập mã này vào ứng dụng Decider để tham gia bình chọn: " + poll.getQuestion());
+                        startActivity(Intent.createChooser(shareIntent, "Chia sẻ mã mời"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Không thể chia sẻ mã mời", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Đóng", null)
+                .setCancelable(false)
+                .show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Có lỗi xảy ra khi hiển thị mã mời", Toast.LENGTH_SHORT).show();
+        }
     }
     
     private void showRegularResults() {
@@ -159,9 +182,18 @@ public class ResultsActivity extends AppCompatActivity {
         imageViewSpinnerWheel.setVisibility(View.GONE);
         buttonSpin.setVisibility(View.GONE);
         
-        // Calculate and show results
-        poll.closePoll();
+        // Chỉ đóng poll nếu đã hết hạn
+        if (poll.isActive() && poll.isExpired()) {
+            poll.closePoll();
+            storage.savePoll(poll);
+        }
+        
+        // Lấy kết quả hiện tại
         List<String> results = poll.getResults();
+        if (results == null || results.isEmpty()) {
+            // Nếu chưa có kết quả, hiển thị options theo thứ tự
+            results = new ArrayList<>(poll.getOptions());
+        }
         
         resultsAdapter = new ResultsAdapter(results, poll);
         recyclerViewResults.setLayoutManager(new LinearLayoutManager(this));
