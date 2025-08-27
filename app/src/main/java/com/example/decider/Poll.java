@@ -38,38 +38,109 @@ public class Poll {
     
     public Poll(String id, String question, List<String> options, VotingMode votingMode) {
         this();
-        this.id = id;
-        this.question = question;
-        if (options != null) {
+        this.id = id != null ? id : "poll_" + System.currentTimeMillis();
+        this.question = question != null ? question : "";
+        if (options != null && !options.isEmpty()) {
             this.options = new ArrayList<>(options);
+        } else {
+            this.options = new ArrayList<>();
         }
-        this.votingMode = votingMode;
+        this.votingMode = votingMode != null ? votingMode : VotingMode.SINGLE_CHOICE;
         // Không gọi calculateResults() ở đây vì chưa có votes
     }
     
     // Tạo mã mời ngẫu nhiên 6 ký tự
     private String generateInviteCode() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder code = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 6; i++) {
-            code.append(chars.charAt(random.nextInt(chars.length())));
+        try {
+            String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            StringBuilder code = new StringBuilder();
+            Random random = new Random();
+            for (int i = 0; i < 6; i++) {
+                code.append(chars.charAt(random.nextInt(chars.length())));
+            }
+            return code.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "ABC123"; // Fallback code
         }
-        return code.toString();
     }
     
     // Getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() { 
+        try {
+            return id != null ? id : "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     
-    public String getQuestion() { return question; }
-    public void setQuestion(String question) { this.question = question; }
+    public void setId(String id) { 
+        try {
+            this.id = id != null ? id : "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.id = "";
+        }
+    }
     
-    public List<String> getOptions() { return options; }
-    public void setOptions(List<String> options) { this.options = new ArrayList<>(options); }
+    public String getQuestion() { 
+        try {
+            return question != null ? question : "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     
-    public VotingMode getVotingMode() { return votingMode; }
-    public void setVotingMode(VotingMode votingMode) { this.votingMode = votingMode; }
+    public void setQuestion(String question) { 
+        try {
+            this.question = question != null ? question : "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.question = "";
+        }
+    }
+    
+    public List<String> getOptions() { 
+        try {
+            return options != null ? options : new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    
+    public void setOptions(List<String> options) {
+        try {
+            if (options != null) {
+                this.options = new ArrayList<>(options);
+            } else {
+                this.options = new ArrayList<>();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.options = new ArrayList<>();
+        }
+    }
+    
+    public VotingMode getVotingMode() { 
+        try {
+            return votingMode != null ? votingMode : VotingMode.SINGLE_CHOICE;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return VotingMode.SINGLE_CHOICE;
+        }
+    }
+    
+    public void setVotingMode(VotingMode votingMode) { 
+        try {
+            this.votingMode = votingMode != null ? votingMode : VotingMode.SINGLE_CHOICE;
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.votingMode = VotingMode.SINGLE_CHOICE;
+        }
+    }
     
     public boolean isHasTimer() { return hasTimer; }
     public void setHasTimer(boolean hasTimer) { this.hasTimer = hasTimer; }
@@ -83,130 +154,245 @@ public class Poll {
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
     
-    public Map<String, Vote> getVotes() { return votes; }
-    public void setVotes(Map<String, Vote> votes) { this.votes = votes; }
+    public Map<String, Vote> getVotes() { 
+        try {
+            return votes != null ? votes : new HashMap<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
+    }
+    public void setVotes(Map<String, Vote> votes) {
+        try {
+            if (votes != null) {
+                this.votes = new HashMap<>(votes);
+            } else {
+                this.votes = new HashMap<>();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.votes = new HashMap<>();
+        }
+    }
     
-    public List<String> getResults() { return results; }
-    public void setResults(List<String> results) { this.results = results; }
+    public List<String> getResults() { 
+        try {
+            return results != null ? results : new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+    public void setResults(List<String> results) {
+        try {
+            if (results != null) {
+                this.results = new ArrayList<>(results);
+            } else {
+                this.results = new ArrayList<>();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.results = new ArrayList<>();
+        }
+    }
     
-    public String getInviteCode() { return inviteCode; }
-    public void setInviteCode(String inviteCode) { this.inviteCode = inviteCode; }
+    public String getInviteCode() { 
+        try {
+            return inviteCode != null ? inviteCode : generateInviteCode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return generateInviteCode();
+        }
+    }
+    public void setInviteCode(String inviteCode) {
+        try {
+            this.inviteCode = inviteCode != null ? inviteCode : generateInviteCode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            this.inviteCode = generateInviteCode();
+        }
+    }
     
     // Helper methods
     public void addVote(String userId, Vote vote) {
-        votes.put(userId, vote);
+        try {
+            if (userId != null && vote != null && votes != null) {
+                votes.put(userId, vote);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public boolean isExpired() {
-        if (!hasTimer) return false;
-        long elapsed = System.currentTimeMillis() - startTime;
-        return elapsed > (timerMinutes * 60 * 1000);
+        try {
+            if (!hasTimer) return false;
+            long elapsed = System.currentTimeMillis() - startTime;
+            return elapsed > (timerMinutes * 60 * 1000);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public long getRemainingTime() {
-        if (!hasTimer) return Long.MAX_VALUE;
-        long elapsed = System.currentTimeMillis() - startTime;
-        long remaining = (timerMinutes * 60 * 1000) - elapsed;
-        return Math.max(0, remaining);
+        try {
+            if (!hasTimer) return Long.MAX_VALUE;
+            long elapsed = System.currentTimeMillis() - startTime;
+            long remaining = (timerMinutes * 60 * 1000) - elapsed;
+            return Math.max(0, remaining);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Long.MAX_VALUE;
+        }
     }
     
     public void closePoll() {
-        isActive = false;
-        // Chỉ tính toán kết quả khi có options và votes
-        if (options != null && !options.isEmpty()) {
-            calculateResults();
+        try {
+            isActive = false;
+            // Chỉ tính toán kết quả khi có options và votes
+            if (options != null && !options.isEmpty()) {
+                calculateResults();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
     private void calculateResults() {
-        if (results == null) {
-            results = new ArrayList<>();
-        }
-        results.clear();
-        
-        if (options == null || options.isEmpty()) {
-            return; // Không thể tính toán kết quả nếu không có options
-        }
-        
-        switch (votingMode) {
-            case SINGLE_CHOICE:
-                calculateSingleChoiceResults();
-                break;
-            case RANKED_CHOICE:
-                calculateRankedChoiceResults();
-                break;
-            case RANDOM_SPINNER:
-                // For random spinner, results are determined by spinning
-                results.addAll(options);
-                break;
+        try {
+            if (results == null) {
+                results = new ArrayList<>();
+            }
+            results.clear();
+            
+            if (options == null || options.isEmpty()) {
+                return; // Không thể tính toán kết quả nếu không có options
+            }
+            
+            switch (votingMode) {
+                case SINGLE_CHOICE:
+                    calculateSingleChoiceResults();
+                    break;
+                case RANKED_CHOICE:
+                    calculateRankedChoiceResults();
+                    break;
+                case RANDOM_SPINNER:
+                    // For random spinner, results are determined by spinning
+                    results.addAll(options);
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     
     private void calculateSingleChoiceResults() {
-        if (options == null || options.isEmpty()) return;
-        
-        Map<String, Integer> counts = new HashMap<>();
-        for (String option : options) {
-            counts.put(option, 0);
-        }
-        
-        if (votes != null) {
-            for (Vote vote : votes.values()) {
-                if (vote != null && vote.getSingleChoice() != null) {
-                    counts.put(vote.getSingleChoice(), counts.get(vote.getSingleChoice()) + 1);
+        try {
+            if (options == null || options.isEmpty()) return;
+            
+            Map<String, Integer> counts = new HashMap<>();
+            for (String option : options) {
+                if (option != null) {
+                    counts.put(option, 0);
                 }
             }
+            
+            if (votes != null) {
+                for (Vote vote : votes.values()) {
+                    if (vote != null && vote.getSingleChoice() != null) {
+                        counts.put(vote.getSingleChoice(), counts.getOrDefault(vote.getSingleChoice(), 0) + 1);
+                    }
+                }
+            }
+            
+            results.addAll(options);
+            results.sort((a, b) -> {
+                try {
+                    if (a != null && b != null) {
+                        return counts.getOrDefault(b, 0) - counts.getOrDefault(a, 0);
+                    }
+                    return 0;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        
-        results.addAll(options);
-        results.sort((a, b) -> counts.get(b) - counts.get(a));
     }
     
     private void calculateRankedChoiceResults() {
-        if (options == null || options.isEmpty()) return;
-        
-        Map<String, Integer> scores = new HashMap<>();
-        for (String option : options) {
-            scores.put(option, 0);
-        }
-        
-        if (votes != null) {
-            for (Vote vote : votes.values()) {
-                if (vote != null) {
-                    List<String> rankings = vote.getRankings();
-                    if (rankings != null) {
-                        for (int i = 0; i < rankings.size(); i++) {
-                            String option = rankings.get(i);
-                            int points = options.size() - i; // First place gets most points
-                            scores.put(option, scores.get(option) + points);
+        try {
+            if (options == null || options.isEmpty()) return;
+            
+            Map<String, Integer> scores = new HashMap<>();
+            for (String option : options) {
+                if (option != null) {
+                    scores.put(option, 0);
+                }
+            }
+            
+            if (votes != null) {
+                for (Vote vote : votes.values()) {
+                    if (vote != null) {
+                        List<String> rankings = vote.getRankings();
+                        if (rankings != null) {
+                            for (int i = 0; i < rankings.size(); i++) {
+                                String option = rankings.get(i);
+                                if (option != null) {
+                                    int points = options.size() - i; // First place gets most points
+                                    scores.put(option, scores.getOrDefault(option, 0) + points);
+                                }
+                            }
                         }
                     }
                 }
             }
+            
+            results.addAll(options);
+            results.sort((a, b) -> {
+                try {
+                    if (a != null && b != null) {
+                        return scores.getOrDefault(b, 0) - scores.getOrDefault(a, 0);
+                    }
+                    return 0;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return 0;
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        
-        results.addAll(options);
-        results.sort((a, b) -> scores.get(b) - scores.get(a));
     }
     
     public boolean hasTiedResults() {
-        if (results == null || results.size() < 2) return false;
-        
-        Map<String, Integer> counts = new HashMap<>();
-        if (votes != null) {
-            for (Vote vote : votes.values()) {
-                if (vote != null && votingMode == VotingMode.SINGLE_CHOICE && vote.getSingleChoice() != null) {
-                    counts.put(vote.getSingleChoice(), counts.getOrDefault(vote.getSingleChoice(), 0) + 1);
+        try {
+            if (results == null || results.size() < 2) return false;
+            
+            Map<String, Integer> counts = new HashMap<>();
+            if (votes != null) {
+                for (Vote vote : votes.values()) {
+                    if (vote != null && votingMode == VotingMode.SINGLE_CHOICE && vote.getSingleChoice() != null) {
+                        counts.put(vote.getSingleChoice(), counts.getOrDefault(vote.getSingleChoice(), 0) + 1);
+                    }
                 }
             }
+            
+            if (results.size() >= 2) {
+                String first = results.get(0);
+                String second = results.get(1);
+                if (first != null && second != null) {
+                    return counts.getOrDefault(first, 0).equals(counts.getOrDefault(second, 0));
+                }
+            }
+            
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
-        
-        if (results.size() >= 2) {
-            String first = results.get(0);
-            String second = results.get(1);
-            return counts.getOrDefault(first, 0).equals(counts.getOrDefault(second, 0));
-        }
-        
-        return false;
     }
 }

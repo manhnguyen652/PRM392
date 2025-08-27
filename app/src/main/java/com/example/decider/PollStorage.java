@@ -18,17 +18,29 @@ public class PollStorage {
     private Gson gson;
     
     public PollStorage(Context context) {
-        prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        gson = new Gson();
+        try {
+            if (context != null) {
+                prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+                gson = new Gson();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     // Poll management
     public void savePoll(Poll poll) {
         try {
+            if (poll == null || prefs == null || gson == null) {
+                return;
+            }
+            
             List<Poll> polls = getAllPolls();
             
             // Remove existing poll with same ID
-            polls.removeIf(p -> p.getId().equals(poll.getId()));
+            if (poll.getId() != null) {
+                polls.removeIf(p -> p != null && p.getId() != null && p.getId().equals(poll.getId()));
+            }
             
             // Add updated poll
             polls.add(poll);
@@ -42,6 +54,10 @@ public class PollStorage {
     
     public List<Poll> getAllPolls() {
         try {
+            if (prefs == null || gson == null) {
+                return new ArrayList<>();
+            }
+            
             String json = prefs.getString(KEY_POLLS, "[]");
             Type listType = new TypeToken<List<Poll>>(){}.getType();
             List<Poll> polls = gson.fromJson(json, listType);
@@ -54,6 +70,10 @@ public class PollStorage {
     
     public Poll getPollById(String id) {
         try {
+            if (id == null || prefs == null || gson == null) {
+                return null;
+            }
+            
             List<Poll> polls = getAllPolls();
             for (Poll poll : polls) {
                 if (poll != null && poll.getId() != null && poll.getId().equals(id)) {
@@ -69,6 +89,10 @@ public class PollStorage {
     
     public Poll getPollByInviteCode(String inviteCode) {
         try {
+            if (inviteCode == null || prefs == null || gson == null) {
+                return null;
+            }
+            
             List<Poll> polls = getAllPolls();
             for (Poll poll : polls) {
                 if (poll != null && poll.getInviteCode() != null && 
@@ -84,15 +108,27 @@ public class PollStorage {
     }
     
     public void deletePoll(String id) {
-        List<Poll> polls = getAllPolls();
-        polls.removeIf(p -> p.getId().equals(id));
-        String json = gson.toJson(polls);
-        prefs.edit().putString(KEY_POLLS, json).apply();
+        try {
+            if (id == null || prefs == null || gson == null) {
+                return;
+            }
+            
+            List<Poll> polls = getAllPolls();
+            polls.removeIf(p -> p != null && p.getId() != null && p.getId().equals(id));
+            String json = gson.toJson(polls);
+            prefs.edit().putString(KEY_POLLS, json).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     // Current poll management
     public void setCurrentPoll(Poll poll) {
         try {
+            if (poll == null || prefs == null || gson == null) {
+                clearCurrentPoll();
+                return;
+            }
             String json = gson.toJson(poll);
             prefs.edit().putString(KEY_CURRENT_POLL, json).apply();
         } catch (Exception e) {
@@ -102,6 +138,10 @@ public class PollStorage {
     
     public Poll getCurrentPoll() {
         try {
+            if (prefs == null || gson == null) {
+                return null;
+            }
+            
             String json = prefs.getString(KEY_CURRENT_POLL, null);
             if (json != null) {
                 return gson.fromJson(json, Poll.class);
@@ -114,53 +154,106 @@ public class PollStorage {
     }
     
     public void clearCurrentPoll() {
-        prefs.edit().remove(KEY_CURRENT_POLL).apply();
+        try {
+            if (prefs != null) {
+                prefs.edit().remove(KEY_CURRENT_POLL).apply();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     // Template management
     public void saveTemplate(PollTemplate template) {
-        List<PollTemplate> templates = getAllTemplates();
-        
-        // Remove existing template with same ID
-        templates.removeIf(t -> t.getId().equals(template.getId()));
-        
-        // Add updated template
-        templates.add(template);
-        
-        String json = gson.toJson(templates);
-        prefs.edit().putString(KEY_TEMPLATES, json).apply();
+        try {
+            if (template == null || prefs == null || gson == null) {
+                return;
+            }
+            
+            List<PollTemplate> templates = getAllTemplates();
+            
+            // Remove existing template with same ID
+            if (template.getId() != null) {
+                templates.removeIf(t -> t != null && t.getId() != null && t.getId().equals(template.getId()));
+            }
+            
+            // Add updated template
+            templates.add(template);
+            
+            String json = gson.toJson(templates);
+            prefs.edit().putString(KEY_TEMPLATES, json).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public List<PollTemplate> getAllTemplates() {
-        String json = prefs.getString(KEY_TEMPLATES, "[]");
-        Type listType = new TypeToken<List<PollTemplate>>(){}.getType();
-        List<PollTemplate> templates = gson.fromJson(json, listType);
-        return templates != null ? templates : new ArrayList<>();
+        try {
+            if (prefs == null || gson == null) {
+                return new ArrayList<>();
+            }
+            
+            String json = prefs.getString(KEY_TEMPLATES, "[]");
+            Type listType = new TypeToken<List<PollTemplate>>(){}.getType();
+            List<PollTemplate> templates = gson.fromJson(json, listType);
+            return templates != null ? templates : new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
     
     public PollTemplate getTemplateById(String id) {
-        List<PollTemplate> templates = getAllTemplates();
-        for (PollTemplate template : templates) {
-            if (template.getId().equals(id)) {
-                return template;
+        try {
+            if (id == null) {
+                return null;
             }
+            
+            List<PollTemplate> templates = getAllTemplates();
+            for (PollTemplate template : templates) {
+                if (template != null && template.getId() != null && template.getId().equals(id)) {
+                    return template;
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
     }
     
     public void deleteTemplate(String id) {
-        List<PollTemplate> templates = getAllTemplates();
-        templates.removeIf(t -> t.getId().equals(id));
-        String json = gson.toJson(templates);
-        prefs.edit().putString(KEY_TEMPLATES, json).apply();
+        try {
+            if (id == null || prefs == null || gson == null) {
+                return;
+            }
+            
+            List<PollTemplate> templates = getAllTemplates();
+            templates.removeIf(t -> t != null && t.getId() != null && t.getId().equals(id));
+            String json = gson.toJson(templates);
+            prefs.edit().putString(KEY_TEMPLATES, json).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     // Utility methods
     public void clearAllData() {
-        prefs.edit().clear().apply();
+        try {
+            if (prefs != null) {
+                prefs.edit().clear().apply();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     public boolean hasTemplates() {
-        return !getAllTemplates().isEmpty();
+        try {
+            return !getAllTemplates().isEmpty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
