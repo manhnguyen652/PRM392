@@ -83,6 +83,8 @@ public class SpinningWheelView extends View {
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setTextSize(48f);
         textPaint.setFakeBoldText(true);
+        textPaint.setShadowLayer(4f, 2f, 2f, Color.BLACK);
+        textPaint.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         
         arrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         arrowPaint.setColor(Color.parseColor("#2C3E50"));
@@ -137,8 +139,14 @@ public class SpinningWheelView extends View {
         // Create arrow path (pointing down to wheel)
         createArrowPath();
         
-        // Adjust text size based on wheel size
-        textPaint.setTextSize(wheelRadius * 0.12f);
+        // Adjust text size based on wheel size and number of options
+        float baseTextSize = wheelRadius * 0.15f;
+        if (options.size() > 6) {
+            baseTextSize = wheelRadius * 0.12f;
+        } else if (options.size() > 4) {
+            baseTextSize = wheelRadius * 0.14f;
+        }
+        textPaint.setTextSize(baseTextSize);
     }
     
     private void createArrowPath() {
@@ -207,29 +215,60 @@ public class SpinningWheelView extends View {
         canvas.rotate(angle, centerX, centerY);
         
         // Calculate text position (middle of segment)
-        float textRadius = wheelRadius * 0.7f;
+        float textRadius = wheelRadius * 0.65f;
         float textX = centerX;
-        float textY = centerY - textRadius;
+        float textY = centerY - textRadius + textPaint.getTextSize() * 0.3f;
         
-        // Adjust text size if segment is small
+        // Adjust text size based on segment size and text length
         float originalTextSize = textPaint.getTextSize();
-        if (segmentAngle < 30) {
-            textPaint.setTextSize(originalTextSize * 0.8f);
+        float adjustedTextSize = originalTextSize;
+        
+        // Scale text based on segment angle
+        if (segmentAngle < 45) {
+            adjustedTextSize = originalTextSize * 0.7f;
+        } else if (segmentAngle < 60) {
+            adjustedTextSize = originalTextSize * 0.85f;
         }
         
-        // Truncate text if too long
+        // Further adjust for text length
+        if (text.length() > 10) {
+            adjustedTextSize *= 0.8f;
+        } else if (text.length() > 6) {
+            adjustedTextSize *= 0.9f;
+        }
+        
+        textPaint.setTextSize(adjustedTextSize);
+        
+        // Smart text truncation
         String displayText = text;
-        if (text.length() > 8) {
-            displayText = text.substring(0, 6) + "...";
+        float maxWidth = wheelRadius * 1.2f;
+        
+        while (textPaint.measureText(displayText) > maxWidth && displayText.length() > 3) {
+            if (displayText.endsWith("...")) {
+                displayText = displayText.substring(0, displayText.length() - 4) + "...";
+            } else {
+                displayText = displayText.substring(0, displayText.length() - 1) + "...";
+            }
         }
         
-        // Draw text with shadow for better visibility
+        // Draw text with enhanced shadow and stroke for better visibility
+        Paint.Style originalStyle = textPaint.getStyle();
+        float originalStrokeWidth = textPaint.getStrokeWidth();
+        
+        // Draw text outline (stroke)
+        textPaint.setStyle(Paint.Style.STROKE);
+        textPaint.setStrokeWidth(adjustedTextSize * 0.08f);
         textPaint.setColor(Color.BLACK);
-        canvas.drawText(displayText, textX + 2, textY + 2, textPaint);
+        canvas.drawText(displayText, textX, textY, textPaint);
+        
+        // Draw main text (fill)
+        textPaint.setStyle(Paint.Style.FILL);
         textPaint.setColor(Color.WHITE);
         canvas.drawText(displayText, textX, textY, textPaint);
         
-        // Restore text size
+        // Restore original paint settings
+        textPaint.setStyle(originalStyle);
+        textPaint.setStrokeWidth(originalStrokeWidth);
         textPaint.setTextSize(originalTextSize);
         
         canvas.restore();
