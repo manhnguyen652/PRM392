@@ -16,7 +16,7 @@ import java.util.List;
 public class TemplateLibraryActivity extends AppCompatActivity {
     
     private RecyclerView recyclerViewTemplates;
-    private TextView textViewEmpty;
+    private View textViewEmpty;
     private Button buttonBack;
     private TemplateAdapter templateAdapter;
     private PollStorage storage;
@@ -58,7 +58,7 @@ public class TemplateLibraryActivity extends AppCompatActivity {
     }
     
     private void setupUI() {
-        setTitle(isSelectMode ? "Chọn mẫu" : "Thư viện mẫu");
+        setTitle(isSelectMode ? getString(R.string.template_library_select_title) : getString(R.string.template_library_title));
         
         recyclerViewTemplates.setLayoutManager(new LinearLayoutManager(this));
         

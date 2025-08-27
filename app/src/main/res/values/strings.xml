@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Decider</string>
     <string name="template_library_title">Thư viện mẫu quyết định</string>
+    <string name="template_library_select_title">Chọn mẫu</string>
+    <string name="template_library_subtitle">Sử dụng lại các mẫu đã lưu để tạo cuộc bình chọn nhanh chóng</string>
+    <string name="template_empty_title">Chưa có mẫu nào</string>
+    <string name="template_empty_subtitle">Tạo cuộc bình chọn và lưu thành mẫu để sử dụng lại sau này</string>
     <string name="saved_polls_title">Cuộc bình chọn đã lưu</string>
     <string name="saved_polls_subtitle">Xem lại và quản lý các cuộc bình chọn đã tạo</string>
     <string name="empty_saved_polls_title">Chưa có cuộc bình chọn nào</string>
