@@ -32,6 +32,7 @@ public class CreatePollActivity extends AppCompatActivity {
     private EditText editTextTimer;
     private Button buttonCreatePoll;
     private Button buttonUseTemplate;
+    private Button buttonBack;
     
     private PollOptionsAdapter optionsAdapter;
     private List<String> options;
@@ -65,6 +66,7 @@ public class CreatePollActivity extends AppCompatActivity {
         editTextTimer = findViewById(R.id.edit_text_timer);
         buttonCreatePoll = findViewById(R.id.button_create_poll);
         buttonUseTemplate = findViewById(R.id.button_use_template);
+        buttonBack = findViewById(R.id.button_back);
     }
     
     private void setupUI() {
@@ -79,6 +81,12 @@ public class CreatePollActivity extends AppCompatActivity {
         
         // Setup click listeners
         buttonAddOption.setOnClickListener(v -> addOption(""));
+        
+        buttonBack.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
         
         buttonUseTemplate.setOnClickListener(v -> {
             if (storage.hasTemplates()) {

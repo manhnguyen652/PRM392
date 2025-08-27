@@ -52,6 +52,16 @@ public class PollStorage {
         return null;
     }
     
+    public Poll getPollByInviteCode(String inviteCode) {
+        List<Poll> polls = getAllPolls();
+        for (Poll poll : polls) {
+            if (poll.getInviteCode().equals(inviteCode) && poll.isActive()) {
+                return poll;
+            }
+        }
+        return null;
+    }
+    
     public void deletePoll(String id) {
         List<Poll> polls = getAllPolls();
         polls.removeIf(p -> p.getId().equals(id));

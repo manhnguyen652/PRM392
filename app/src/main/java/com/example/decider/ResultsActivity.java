@@ -28,6 +28,8 @@ public class ResultsActivity extends AppCompatActivity {
     private ImageView imageViewSpinnerWheel;
     private Button buttonSpin;
     private Button buttonSaveTemplate;
+    private Button buttonShowInviteCode;
+    private Button buttonBack;
     
     private Poll poll;
     private PollStorage storage;
@@ -55,6 +57,8 @@ public class ResultsActivity extends AppCompatActivity {
         imageViewSpinnerWheel = findViewById(R.id.image_view_spinner_wheel);
         buttonSpin = findViewById(R.id.button_spin);
         buttonSaveTemplate = findViewById(R.id.button_save_template);
+        buttonShowInviteCode = findViewById(R.id.button_show_invite_code);
+        buttonBack = findViewById(R.id.button_back);
     }
     
     private void loadPoll() {
@@ -81,6 +85,11 @@ public class ResultsActivity extends AppCompatActivity {
             storage.savePoll(poll);
         }
         
+        // Show invite code if this is a newly created poll
+        if (isCreator && poll.isActive()) {
+            showInviteCodeDialog();
+        }
+        
         // Setup based on voting mode
         switch (poll.getVotingMode()) {
             case SINGLE_CHOICE:
@@ -96,9 +105,53 @@ public class ResultsActivity extends AppCompatActivity {
         if (isCreator) {
             buttonSaveTemplate.setVisibility(View.VISIBLE);
             buttonSaveTemplate.setOnClickListener(v -> saveAsTemplate());
+            
+            // Show invite code button for active polls
+            if (poll.isActive()) {
+                buttonShowInviteCode.setVisibility(View.VISIBLE);
+                buttonShowInviteCode.setOnClickListener(v -> showInviteCodeDialog());
+            } else {
+                buttonShowInviteCode.setVisibility(View.GONE);
+            }
         } else {
             buttonSaveTemplate.setVisibility(View.GONE);
+            buttonShowInviteCode.setVisibility(View.GONE);
         }
+
+        // Setup back button
+        buttonBack.setOnClickListener(v -> {
+            Intent intent = new Intent(ResultsActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        });
+    }
+    
+    private void showInviteCodeDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle("🎉 Cuộc bình chọn đã được tạo!")
+            .setMessage("Mã mời: " + poll.getInviteCode() + "\n\nChia sẻ mã này với người khác để họ có thể tham gia bình chọn.")
+            .setPositiveButton("Sao chép mã", (dialog, which) -> {
+                // Copy invite code to clipboard
+                android.content.ClipboardManager clipboard = 
+                    (android.content.ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                android.content.ClipData clip = 
+                    android.content.ClipData.newPlainText("Mã mời", poll.getInviteCode());
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(this, "Đã sao chép mã mời vào clipboard", Toast.LENGTH_SHORT).show();
+            })
+            .setNeutralButton("Chia sẻ", (dialog, which) -> {
+                // Share invite code
+                Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                shareIntent.setType("text/plain");
+                shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Mã mời tham gia bình chọn");
+                shareIntent.putExtra(Intent.EXTRA_TEXT, 
+                    "Mã mời: " + poll.getInviteCode() + "\n\nHãy nhập mã này vào ứng dụng Decider để tham gia bình chọn: " + poll.getQuestion());
+                startActivity(Intent.createChooser(shareIntent, "Chia sẻ mã mời"));
+            })
+            .setNegativeButton("Đóng", null)
+            .setCancelable(false)
+            .show();
     }
     
     private void showRegularResults() {

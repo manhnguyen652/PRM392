@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Poll {
     public enum VotingMode {
@@ -22,6 +23,7 @@ public class Poll {
     private boolean isActive;
     private Map<String, Vote> votes; // userId -> Vote
     private List<String> results; // calculated results
+    private String inviteCode; // Mã mời để tham gia
     
     public Poll() {
         this.options = new ArrayList<>();
@@ -30,6 +32,7 @@ public class Poll {
         this.votingMode = VotingMode.SINGLE_CHOICE;
         this.isActive = true;
         this.startTime = System.currentTimeMillis();
+        this.inviteCode = generateInviteCode();
     }
     
     public Poll(String id, String question, List<String> options, VotingMode votingMode) {
@@ -40,6 +43,17 @@ public class Poll {
         this.votingMode = votingMode;
     }
     
+    // Tạo mã mời ngẫu nhiên 6 ký tự
+    private String generateInviteCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        StringBuilder code = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            code.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return code.toString();
+    }
+    
     // Getters and setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -48,7 +62,7 @@ public class Poll {
     public void setQuestion(String question) { this.question = question; }
     
     public List<String> getOptions() { return options; }
-    public void setOptions(List<String> options) { this.options = options; }
+    public void setOptions(List<String> options) { this.options = new ArrayList<>(options); }
     
     public VotingMode getVotingMode() { return votingMode; }
     public void setVotingMode(VotingMode votingMode) { this.votingMode = votingMode; }
@@ -70,6 +84,9 @@ public class Poll {
     
     public List<String> getResults() { return results; }
     public void setResults(List<String> results) { this.results = results; }
+    
+    public String getInviteCode() { return inviteCode; }
+    public void setInviteCode(String inviteCode) { this.inviteCode = inviteCode; }
     
     // Helper methods
     public void addVote(String userId, Vote vote) {

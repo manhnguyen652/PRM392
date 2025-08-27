@@ -28,6 +28,7 @@ public class VoteActivity extends AppCompatActivity {
     private RecyclerView recyclerViewRankingOptions;
     private LinearLayout layoutRandomSpinner;
     private Button buttonSubmitVote;
+    private Button buttonBack;
     
     private Poll poll;
     private PollStorage storage;
@@ -56,6 +57,7 @@ public class VoteActivity extends AppCompatActivity {
         recyclerViewRankingOptions = findViewById(R.id.recycler_view_ranking_options);
         layoutRandomSpinner = findViewById(R.id.layout_random_spinner);
         buttonSubmitVote = findViewById(R.id.button_submit_vote);
+        buttonBack = findViewById(R.id.button_back);
     }
     
     private void loadPoll() {
@@ -97,6 +99,7 @@ public class VoteActivity extends AppCompatActivity {
         }
         
         buttonSubmitVote.setOnClickListener(v -> submitVote());
+        buttonBack.setOnClickListener(v -> goToMainActivity());
     }
     
     private void setupTimer() {
@@ -238,6 +241,12 @@ public class VoteActivity extends AppCompatActivity {
     private void goToResults() {
         Intent intent = new Intent(this, ResultsActivity.class);
         intent.putExtra("poll_id", poll.getId());
+        startActivity(intent);
+        finish();
+    }
+
+    private void goToMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
     }
