@@ -67,4 +67,16 @@
         android:drawableStart="@drawable/ic_library_books_24"
         android:drawablePadding="12dp"/>
 
+    <Button
+        android:id="@+id/button_saved_polls"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cuộc bình chọn đã lưu"
+        android:textSize="16sp"
+        android:padding="16dp"
+        android:layout_marginTop="12dp"
+        android:drawableStart="@drawable/ic_how_to_vote_24"
+        android:drawablePadding="12dp"/>
+
 </LinearLayout>
