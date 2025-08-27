@@ -61,7 +61,7 @@
         style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Thư viện mẫu quyết định"
+        android:text="@string/template_library_title"
         android:textSize="16sp"
         android:padding="16dp"
         android:drawableStart="@drawable/ic_library_books_24"
