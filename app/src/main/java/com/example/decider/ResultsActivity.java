@@ -32,6 +32,7 @@ public class ResultsActivity extends AppCompatActivity {
     private Button buttonSaveTemplate;
     private Button buttonShowInviteCode;
     private Button buttonBack;
+    private Button buttonEndPoll;
     
     private Poll poll;
     private PollStorage storage;
@@ -69,6 +70,7 @@ public class ResultsActivity extends AppCompatActivity {
             buttonSaveTemplate = findViewById(R.id.button_save_template);
             buttonShowInviteCode = findViewById(R.id.button_show_invite_code);
             buttonBack = findViewById(R.id.button_back);
+            buttonEndPoll = findViewById(R.id.button_end_poll);
             
             // Validate that all views were found
             if (textViewQuestionResult == null || frameLayoutResultContainer == null || 
@@ -145,9 +147,22 @@ public class ResultsActivity extends AppCompatActivity {
                 } else {
                     buttonShowInviteCode.setVisibility(View.GONE);
                 }
+
+                // End poll button
+                if (buttonEndPoll != null) {
+                    if (poll.isActive()) {
+                        buttonEndPoll.setVisibility(View.VISIBLE);
+                        buttonEndPoll.setOnClickListener(v -> confirmEndPoll());
+                    } else {
+                        buttonEndPoll.setVisibility(View.GONE);
+                    }
+                }
             } else {
                 buttonSaveTemplate.setVisibility(View.GONE);
                 buttonShowInviteCode.setVisibility(View.GONE);
+                if (buttonEndPoll != null) {
+                    buttonEndPoll.setVisibility(View.GONE);
+                }
             }
 
             // Setup back button
@@ -254,6 +269,46 @@ public class ResultsActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Có lỗi xảy ra khi hiển thị kết quả: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void confirmEndPoll() {
+        try {
+            new AlertDialog.Builder(this)
+                .setTitle("Kết thúc cuộc bình chọn?")
+                .setMessage("Sau khi kết thúc, kết quả sẽ được chốt và lưu lại.")
+                .setPositiveButton("Kết thúc", (dialog, which) -> endPollAndPersist())
+                .setNegativeButton("Hủy", null)
+                .show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void endPollAndPersist() {
+        try {
+            if (poll == null || storage == null) return;
+            if (!poll.isActive()) return;
+
+            // Close poll, compute results, mark end time
+            poll.closePoll();
+
+            // Persist updated poll with final results/end time
+            storage.savePoll(poll);
+
+            // Update UI: hide invite, end poll button, refresh results
+            if (buttonShowInviteCode != null) {
+                buttonShowInviteCode.setVisibility(View.GONE);
+            }
+            if (buttonEndPoll != null) {
+                buttonEndPoll.setVisibility(View.GONE);
+            }
+
+            showRegularResults();
+            Toast.makeText(this, "Đã kết thúc và lưu kết quả", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Không thể kết thúc cuộc bình chọn", Toast.LENGTH_SHORT).show();
         }
     }
     

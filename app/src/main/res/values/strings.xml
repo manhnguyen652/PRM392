@@ -9,4 +9,8 @@
     <string name="saved_polls_subtitle">Xem lại và quản lý các cuộc bình chọn đã tạo</string>
     <string name="empty_saved_polls_title">Chưa có cuộc bình chọn nào</string>
     <string name="empty_saved_polls_subtitle">Hãy tạo cuộc bình chọn mới và chúng sẽ xuất hiện tại đây</string>
+    <string name="end_poll">Kết thúc cuộc bình chọn</string>
+    <string name="end_poll_confirm_title">Kết thúc cuộc bình chọn?</string>
+    <string name="end_poll_confirm_message">Sau khi kết thúc, kết quả sẽ được chốt và lưu lại.</string>
+    <string name="end_poll_success">Đã kết thúc và lưu kết quả</string>
 </resources>

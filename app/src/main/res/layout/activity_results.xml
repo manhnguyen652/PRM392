@@ -83,4 +83,12 @@
         android:text="Hiển thị mã mời"
         android:visibility="gone" />
 
+    <Button
+        android:id="@+id/button_end_poll"
+        style="@style/Widget.MaterialComponents.Button.FilledButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/end_poll" />
+
 </LinearLayout>
