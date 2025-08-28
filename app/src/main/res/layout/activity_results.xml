@@ -85,12 +85,8 @@
 
     <Button
         android:id="@+id/button_end_poll"
-<<<<<<< HEAD
-        style="@style/Widget.MaterialComponents.Button"        android:layout_width="match_parent"
-=======
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="match_parent"
->>>>>>> origin/cursor/fix-decision-template-library-error-aee7
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="@string/end_poll" />
