@@ -24,6 +24,7 @@ public class Poll {
     private Map<String, Vote> votes; // userId -> Vote
     private List<String> results; // calculated results
     private String inviteCode; // Mã mời để tham gia
+    private long endTime; // thời điểm kết thúc
     
     public Poll() {
         this.options = new ArrayList<>();
@@ -33,6 +34,7 @@ public class Poll {
         this.isActive = true;
         this.startTime = System.currentTimeMillis();
         this.inviteCode = generateInviteCode();
+        this.endTime = 0L;
         // Không gọi calculateResults() ở đây vì options còn rỗng
     }
     
@@ -46,6 +48,7 @@ public class Poll {
             this.options = new ArrayList<>();
         }
         this.votingMode = votingMode != null ? votingMode : VotingMode.SINGLE_CHOICE;
+        this.endTime = 0L;
         // Không gọi calculateResults() ở đây vì chưa có votes
     }
     
@@ -151,6 +154,9 @@ public class Poll {
     public long getStartTime() { return startTime; }
     public void setStartTime(long startTime) { this.startTime = startTime; }
     
+    public long getEndTime() { return endTime; }
+    public void setEndTime(long endTime) { this.endTime = endTime; }
+    
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
     
@@ -250,6 +256,9 @@ public class Poll {
     public void closePoll() {
         try {
             isActive = false;
+            if (endTime <= 0L) {
+                endTime = System.currentTimeMillis();
+            }
             // Chỉ tính toán kết quả khi có options và votes
             if (options != null && !options.isEmpty()) {
                 calculateResults();
